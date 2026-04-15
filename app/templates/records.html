@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Records - Prescription Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            overflow-x: auto;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .delete-btn:hover {
+            background: #c82333;
+        }
+        
+        .empty {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+        
+        .confidence-high {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .confidence-mid {
+            color: #ffc107;
+            font-weight: bold;
+        }
+        
+        .confidence-low {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">🏥 Prescription Analyzer</div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/predict">Predict Disease</a>
+            <a href="/records">Records</a>
+            <a href="/seasonal">Seasonal Trends</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <h1>📋 Prescription Records</h1>
+        <p class="subtitle">All predictions are automatically saved and persist after browser refresh</p>
+        
+        <div class="table-container">
+            <table id="recordsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Patient</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Disease</th>
+                        <th>Medicine</th>
+                        <th>Dosage</th>
+                        <th>Season</th>
+                        <th>Confidence</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="recordsBody">
+                    <tr>
+                        <td colspan="11" class="empty">Loading records...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        async function loadRecords() {
+            try {
+                const response = await fetch('/api/records');
+                const records = await response.json();
+                const tbody = document.getElementById('recordsBody');
+                
+                if (records.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="11" class="empty">No records found. Make a prediction first!</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = records.map(record => `
+                    <tr>
+                        <td>${record.id}</td>
+                        <td>${record.patient_name}</td>
+                        <td>${record.age}</td>
+                        <td>${record.gender}</td>
+                        <td>${record.disease}</td>
+                        <td>${record.medicine}</td>
+                        <td>${record.dosage_mg} mg</td>
+                        <td>${record.season}</td>
+                        <td class="${getConfidenceClass(record.prediction_confidence)}">${record.prediction_confidence.toFixed(1)}%</td>
+                        <td>${new Date(record.created_at).toLocaleDateString()}</td>
+                        <td><button class="delete-btn" onclick="deleteRecord(${record.id})">Delete</button></td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading records:', error);
+            }
+        }
+        
+        function getConfidenceClass(confidence) {
+            if (confidence >= 80) return 'confidence-high';
+            if (confidence >= 60) return 'confidence-mid';
+            return 'confidence-low';
+        }
+        
+        async function deleteRecord(id) {
+            if (confirm('Are you sure you want to delete this record?')) {
+                try {
+                    const response = await fetch(`/api/records/${id}`, { method: 'DELETE' });
+                    if (response.ok) {
+                        loadRecords();
+                    }
+                } catch (error) {
+                    console.error('Error deleting record:', error);
+                }
+            }
+        }
+        
+        loadRecords();
+        setInterval(loadRecords, 10000);
+    </script>
+</body>
+</html>

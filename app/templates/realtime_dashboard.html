@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prescription Analyzer | Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Light Mode (Default) */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        body.dark-mode .navbar {
+            background: #0f3460;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        body.dark-mode .logo {
+            color: #4ecdc4;
+        }
+
+        body.dark-mode .nav-links a {
+            color: #ddd;
+        }
+
+        body.dark-mode .nav-links a:hover {
+            color: #4ecdc4;
+        }
+
+        body.dark-mode .stat-card {
+            background: #16213e;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        body.dark-mode .stat-value {
+            color: #4ecdc4;
+        }
+
+        body.dark-mode .stat-label {
+            color: #aaa;
+        }
+
+        body.dark-mode .chart-card {
+            background: #16213e;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        body.dark-mode .chart-card h3 {
+            color: #eee;
+        }
+
+        body.dark-mode .controls {
+            background: transparent;
+        }
+
+        body.dark-mode .refresh-btn {
+            background: #4ecdc4;
+            color: #1a1a2e;
+        }
+
+        body.dark-mode .auto-refresh {
+            background: rgba(78, 205, 196, 0.2);
+            color: #ddd;
+        }
+
+        body.dark-mode .insights {
+            background: #16213e;
+        }
+
+        body.dark-mode .insights h3 {
+            color: #eee;
+        }
+
+        body.dark-mode .insights li {
+            color: #bbb;
+        }
+
+        body.dark-mode footer {
+            color: #aaa;
+        }
+
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        /* Dark mode toggle button */
+        .dark-mode-btn {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .dark-mode-btn:hover {
+            background: rgba(0,0,0,0.1);
+            transform: scale(1.1);
+        }
+
+        body.dark-mode .dark-mode-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 2rem;
+        }
+
+        .live-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-left: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .refresh-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .refresh-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .auto-refresh {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .auto-refresh input {
+            margin-right: 5px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .chart-card:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .chart-card h3 {
+            margin-bottom: 1rem;
+            color: #333;
+            border-left: 4px solid #667eea;
+            padding-left: 12px;
+        }
+
+        .chart-card img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .insights {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-top: 2rem;
+            transition: all 0.3s;
+        }
+
+        .insights h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .insights ul {
+            margin-left: 1.5rem;
+        }
+
+        .insights li {
+            margin: 0.5rem 0;
+            color: #555;
+        }
+
+        .timestamp {
+            text-align: right;
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 0.5rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: white;
+            margin-top: 2rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .nav-links {
+                gap: 1rem;
+                margin-top: 0.5rem;
+            }
+            .container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">🏥 Prescription Analyzer</div>
+        <div class="nav-links">
+            <a href="/">Dashboard</a>
+            <a href="/predict">Predict</a>
+            <a href="/records">Records</a>
+           <button class="dark-mode-btn" onclick="toggleDarkMode()" id="darkModeBtn">🌙</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>📊 Real-Time Analytics Dashboard <span class="live-badge">LIVE DATA</span></h1>
+        <p class="subtitle">Charts update automatically based on ALL predictions (original + new records)</p>
+
+        <div class="stats-grid" id="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalRecords">-</div>
+                <div class="stat-label">Total Prescriptions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="topDisease">-</div>
+                <div class="stat-label">Most Common Disease</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="topMedicine">-</div>
+                <div class="stat-label">Most Prescribed Medicine</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="refresh-btn" onclick="refreshAllCharts()">🔄 Refresh All Charts</button>
+            <label class="auto-refresh">
+                <input type="checkbox" id="autoRefresh" checked> Auto-refresh every 30 seconds
+            </label>
+            <span class="auto-refresh" id="lastUpdate">Last updated: Just now</span>
+        </div>
+
+        <div class="charts-grid" id="chartsGrid">
+            <div class="chart-card">
+                <h3>📈 Disease Frequency</h3>
+                <div id="diseaseChartContainer" class="loading">Loading chart...</div>
+            </div>
+            <div class="chart-card">
+                <h3>👥 Age Group Distribution</h3>
+                <div id="ageChartContainer" class="loading">Loading chart...</div>
+            </div>
+            <div class="chart-card">
+                <h3>🌦️ Seasonal Distribution</h3>
+                <div id="seasonalChartContainer" class="loading">Loading chart...</div>
+            </div>
+            <div class="chart-card">
+                <h3>⚥ Gender Distribution</h3>
+                <div id="genderChartContainer" class="loading">Loading chart...</div>
+            </div>
+            <div class="chart-card">
+                <h3>💊 Top 10 Medicines</h3>
+                <div id="medicineChartContainer" class="loading">Loading chart...</div>
+            </div>
+            <div class="chart-card">
+                <h3>⭐ Feature Importance</h3>
+                <div id="featuresChartContainer" class="loading">Loading chart...</div>
+            </div>
+        </div>
+
+        <div class="insights" id="insights">
+            <h3>💡 Key Insights</h3>
+            <ul>
+                <li>Loading insights...</li>
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        <p>✅ Charts show REAL-TIME data from database | Updates when new predictions are made</p>
+    </footer>
+
+   <script>
+    // Dark Mode Functions
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDarkMode);
+        const btn = document.getElementById('darkModeBtn');
+        btn.innerHTML = isDarkMode ? '☀️' : '🌙';
+    }
+
+    // Load dark mode preference
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        const btn = document.getElementById('darkModeBtn');
+        if (btn) btn.innerHTML = '☀️';
+    }
+
+    async function loadStats() {
+        try {
+            const response = await fetch('/api/stats');
+            const stats = await response.json();
+            document.getElementById('totalRecords').textContent = stats.total || 0;
+            document.getElementById('topDisease').textContent = stats.top_disease || 'N/A';
+            document.getElementById('topMedicine').textContent = stats.top_medicine || 'N/A';
+        } catch (error) {
+            console.error('Error loading stats:', error);
+        }
+    }
+
+    async function loadChart(apiUrl, containerId) {
+        try {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+            const container = document.getElementById(containerId);
+            
+            if (data.success && data.chart) {
+                container.innerHTML = `<img src="${data.chart}" alt="Chart">`;
+            } else if (data.error) {
+                container.innerHTML = `<div class="error">⚠️ ${data.error}</div>`;
+            } else {
+                container.innerHTML = `<div class="loading">⚠️ No data available. Make some predictions first!</div>`;
+            }
+        } catch (error) {
+            console.error(`Error loading ${containerId}:`, error);
+            document.getElementById(containerId).innerHTML = `<div class="loading">⚠️ Error loading chart</div>`;
+        }
+    }
+
+    async function loadInsights() {
+        try {
+            const response = await fetch('/api/stats');
+            const stats = await response.json();
+            const total = stats.total || 0;
+            let insightsHtml = '';
+            
+            if (total === 0) {
+                insightsHtml = '<li>📊 Make your first prediction to see insights!</li>';
+            } else {
+                insightsHtml = `
+                    <li>🌧️ <strong>Monsoon (July-September):</strong> Fever and Infection cases increase significantly</li>
+                    <li>❄️ <strong>Winter (December-February):</strong> Cold & Cough are most common</li>
+                    <li>🌸 <strong>Spring (March-May):</strong> Allergy cases peak during this season</li>
+                    <li>🍂 <strong>Autumn (October-November):</strong> Gastric issues are more prevalent</li>
+                    <li>👴 <strong>Elderly patients (60+):</strong> Higher risk of Diabetes and Hypertension</li>
+                    <li>👶 <strong>Children (under 12):</strong> Most affected by Fever and Cold</li>
+                    <li>📊 <strong>Total predictions:</strong> ${total} records analyzed</li>
+                `;
+            }
+            document.getElementById('insights').innerHTML = `<h3>💡 Key Insights</h3><ul>${insightsHtml}</ul>`;
+        } catch (error) {
+            console.error('Error loading insights:', error);
+        }
+    }
+
+    let autoRefreshInterval = null;
+
+    async function refreshAllCharts() {
+        document.getElementById('lastUpdate').innerHTML = `Last updated: ${new Date().toLocaleTimeString()}`;
+        
+        await Promise.all([
+            loadStats(),
+            loadChart('/api/charts/disease', 'diseaseChartContainer'),
+            loadChart('/api/charts/age', 'ageChartContainer'),
+            loadChart('/api/charts/seasonal', 'seasonalChartContainer'),
+            loadChart('/api/charts/gender', 'genderChartContainer'),
+            loadChart('/api/charts/medicine', 'medicineChartContainer'),
+            loadChart('/api/charts/features', 'featuresChartContainer'),
+            loadInsights()
+        ]);
+    }
+
+    function setupAutoRefresh() {
+        const checkbox = document.getElementById('autoRefresh');
+        
+        if (autoRefreshInterval) {
+            clearInterval(autoRefreshInterval);
+        }
+        
+        if (checkbox.checked) {
+            autoRefreshInterval = setInterval(refreshAllCharts, 30000);
+        }
+    }
+
+    // Initial load
+    refreshAllCharts();
+    
+    // Setup auto-refresh
+    document.getElementById('autoRefresh').addEventListener('change', setupAutoRefresh);
+    setupAutoRefresh();
+    
+    // Refresh when page becomes visible again
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            refreshAllCharts();
+        }
+    });
+</script>
+</body>
+</html>

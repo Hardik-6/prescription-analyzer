@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Dashboard - Prescription Analyzer</title>
+        <link rel="stylesheet" href="/static/style.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #667eea;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        
+        .live-badge {
+            background: #28a745;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin-top: 0.5rem;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        .refresh-btn:hover {
+            background: #5a67d8;
+        }
+        
+        .auto-refresh {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .auto-refresh input {
+            margin-right: 5px;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .chart-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: box-shadow 0.3s;
+        }
+        
+        .chart-card:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .chart-card h3 {
+            margin-bottom: 1rem;
+            color: #333;
+            border-left: 4px solid #667eea;
+            padding-left: 12px;
+        }
+        
+        .chart-card img {
+            width: 100%;
+            border-radius: 10px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        .error {
+            color: #dc3545;
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .timestamp {
+            text-align: right;
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 0.5rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            margin-top: 2rem;
+            border-top: 1px solid #ddd;
+        }
+        
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .nav-links {
+                gap: 1rem;
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">🏥 Prescription Analyzer</div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/dashboard">Real-Time Dashboard</a>
+            <a href="/predict">Predict Disease</a>
+            <a href="/records">Records</a>
+            <a href="/seasonal_live">Seasonal Trends</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <h1>📊 Real-Time Analytics Dashboard <span class="live-badge">LIVE DATA</span></h1>
+        <p class="subtitle">Charts update automatically based on ALL predictions (original + new records). No need to re-run analysis!</p>
+        
+        <div class="stats-grid" id="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalRecords">-</div>
+                <div class="stat-label">Total Prescriptions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="topDisease">-</div>
+                <div class="stat-label">Most Common Disease</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="topMedicine">-</div>
+                <div class="stat-label">Most Prescribed Medicine</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="refresh-btn" onclick="refreshAllCharts()">🔄 Refresh All Charts Now</button>
+            <label class="auto-refresh">
+                <input type="checkbox" id="autoRefresh" checked> Auto-refresh every 30 seconds
+            </label>
+            <span class="auto-refresh" id="lastUpdate">Last updated: Just now</span>
+        </div>
+        
+        <div class="charts-grid" id="chartsGrid">
+            <div class="chart-card">
+                <h3>📈 Disease Frequency</h3>
+                <div id="diseaseChartContainer" class="loading">Loading chart...</div>
+            </div>
+            <div class="chart-card">
+                <h3>👥 Age Group Distribution</h3>
+                <div id="ageChartContainer" class="loading">Loading chart...</div>
+            </div>
+            <div class="chart-card">
+                <h3>🌦️ Seasonal Distribution</h3>
+                <div id="seasonalChartContainer" class="loading">Loading chart...</div>
+            </div>
+            <div class="chart-card">
+                <h3>⚥ Gender Distribution</h3>
+                <div id="genderChartContainer" class="loading">Loading chart...</div>
+            </div>
+            <div class="chart-card">
+                <h3>💊 Top 10 Medicines</h3>
+                <div id="medicineChartContainer" class="loading">Loading chart...</div>
+            </div>
+            <div class="chart-card">
+                <h3>⭐ Feature Importance (Model)</h3>
+                <div id="featuresChartContainer" class="loading">Loading chart...</div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>✅ Charts show REAL-TIME data from database | Updates when new predictions are made</p>
+    </footer>
+    
+    <script>
+
+  function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDarkMode);
+        const btn = document.getElementById('darkModeBtn');
+        btn.innerHTML = isDarkMode ? '☀️' : '🌙';
+    }
+
+    // Load dark mode preference
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        const btn = document.getElementById('darkModeBtn');
+        if (btn) btn.innerHTML = '☀️';
+    }
+
+
+        let autoRefreshInterval = null;
+        
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const stats = await response.json();
+                document.getElementById('totalRecords').textContent = stats.total;
+                document.getElementById('topDisease').textContent = stats.top_disease;
+                document.getElementById('topMedicine').textContent = stats.top_medicine;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+        
+        async function loadChart(apiUrl, containerId) {
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                const container = document.getElementById(containerId);
+                
+                if (data.success && data.chart) {
+                    container.innerHTML = `<img src="${data.chart}" alt="Chart">`;
+                } else if (data.error) {
+                    container.innerHTML = `<div class="error">⚠️ ${data.error}</div>`;
+                } else {
+                    container.innerHTML = `<div class="error">⚠️ No data available. Make some predictions first!</div>`;
+                }
+            } catch (error) {
+                console.error(`Error loading ${containerId}:`, error);
+                document.getElementById(containerId).innerHTML = `<div class="error">⚠️ Error loading chart</div>`;
+            }
+        }
+        
+        async function refreshAllCharts() {
+            // Update timestamp
+            document.getElementById('lastUpdate').innerHTML = `Last updated: ${new Date().toLocaleTimeString()}`;
+            
+            // Load all charts in parallel
+            await Promise.all([
+                loadStats(),
+                loadChart('/api/charts/disease', 'diseaseChartContainer'),
+                loadChart('/api/charts/age', 'ageChartContainer'),
+                loadChart('/api/charts/seasonal', 'seasonalChartContainer'),
+                loadChart('/api/charts/gender', 'genderChartContainer'),
+                loadChart('/api/charts/medicine', 'medicineChartContainer'),
+                loadChart('/api/charts/features', 'featuresChartContainer')
+            ]);
+        }
+        
+        // Setup auto-refresh
+        function setupAutoRefresh() {
+            const checkbox = document.getElementById('autoRefresh');
+            
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+            
+            if (checkbox.checked) {
+                autoRefreshInterval = setInterval(refreshAllCharts, 30000);
+            }
+        }
+        
+        // Initial load
+        refreshAllCharts();
+        
+        // Setup auto-refresh listener
+        document.getElementById('autoRefresh').addEventListener('change', setupAutoRefresh);
+        setupAutoRefresh();
+        
+        // Refresh when page becomes visible again
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                refreshAllCharts();
+            }
+        });
+    </script>
+</body>
+</html>

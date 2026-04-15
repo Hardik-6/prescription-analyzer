@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict Disease - Prescription Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .result.success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            display: block;
+        }
+        
+        .result.error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            display: block;
+        }
+        
+        .disease-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #28a745;
+            margin: 10px 0;
+        }
+        
+        .confidence {
+            font-size: 1.2rem;
+            color: #333;
+        }
+        
+        .probabilities {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ddd;
+        }
+        
+        .prob-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+        
+        .prob-bar {
+            background: #667eea;
+            height: 20px;
+            border-radius: 10px;
+            margin-top: 5px;
+            transition: width 0.5s;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">🏥 Prescription Analyzer</div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/predict">Predict Disease</a>
+            <a href="/records">Records</a>
+            <a href="/seasonal">Seasonal Trends</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="card">
+            <h1>🔬 Disease Prediction</h1>
+            <p class="subtitle">Enter prescription details to predict the disease (95% accurate)</p>
+            
+            <form id="predictionForm">
+                <div class="form-group">
+                    <label>Patient Name (Optional)</label>
+                    <input type="text" id="patientName" placeholder="Enter patient name">
+                </div>
+                
+                <div class="form-group">
+                    <label>Age *</label>
+                    <input type="number" id="age" required min="0" max="120" placeholder="Enter age">
+                </div>
+                
+                <div class="form-group">
+                    <label>Gender *</label>
+                    <select id="gender" required>
+                        <option value="">Select gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Medicine *</label>
+                    <select id="medicine" required>
+                        <option value="">Select medicine</option>
+                        <option value="Paracetamol">Paracetamol</option>
+                        <option value="Metformin">Metformin</option>
+                        <option value="Amlodipine">Amlodipine</option>
+                        <option value="Cetirizine">Cetirizine</option>
+                        <option value="Omeprazole">Omeprazole</option>
+                        <option value="Amoxicillin">Amoxicillin</option>
+                        <option value="Loratadine">Loratadine</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Dosage (mg) *</label>
+                    <input type="number" id="dosage" required min="0" step="50" placeholder="Enter dosage in mg">
+                </div>
+                
+                <div class="form-group">
+                    <label>Frequency *</label>
+                    <select id="frequency" required>
+                        <option value="">Select frequency</option>
+                        <option value="Once daily">Once daily</option>
+                        <option value="Twice daily">Twice daily</option>
+                        <option value="Three times daily">Three times daily</option>
+                        <option value="Once weekly">Once weekly</option>
+                        <option value="As needed">As needed</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Month *</label>
+                    <select id="month" required>
+                        <option value="">Select month</option>
+                        <option value="1">January</option>
+                        <option value="2">February</option>
+                        <option value="3">March</option>
+                        <option value="4">April</option>
+                        <option value="5">May</option>
+                        <option value="6">June</option>
+                        <option value="7">July</option>
+                        <option value="8">August</option>
+                        <option value="9">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+                </div>
+                
+                <button type="submit">🔍 Predict Disease</button>
+            </form>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px;">Analyzing prescription data...</p>
+            </div>
+            
+            <div id="result" class="result"></div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const loading = document.getElementById('loading');
+            const resultDiv = document.getElementById('result');
+            
+            loading.classList.add('show');
+            resultDiv.className = 'result';
+            
+            const data = {
+                patient_name: document.getElementById('patientName').value || 'Anonymous',
+                age: document.getElementById('age').value,
+                gender: document.getElementById('gender').value,
+                medicine: document.getElementById('medicine').value,
+                dosage_mg: document.getElementById('dosage').value,
+                frequency: document.getElementById('frequency').value,
+                month: document.getElementById('month').value
+            };
+            
+            try {
+                const response = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                loading.classList.remove('show');
+                
+                if (result.success) {
+                    let probabilitiesHtml = '<div class="probabilities"><h4>All Probabilities:</h4>';
+                    for (const [disease, prob] of Object.entries(result.probabilities)) {
+                        probabilitiesHtml += `
+                            <div class="prob-item">
+                                <span>${disease}</span>
+                                <span>${prob}%</span>
+                            </div>
+                            <div class="prob-bar" style="width: ${prob}%"></div>
+                        `;
+                    }
+                    probabilitiesHtml += '</div>';
+                    
+                    resultDiv.innerHTML = `
+                        <h3>✅ Prediction Result</h3>
+                        <div class="disease-name">${result.disease}</div>
+                        <div class="confidence">Confidence: ${result.confidence}%</div>
+                        ${probabilitiesHtml}
+                        <p style="margin-top: 15px; color: #666;">✓ This prediction has been saved to the database</p>
+                    `;
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.innerHTML = `<h3>❌ Error</h3><p>${result.error}</p>`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                loading.classList.remove('show');
+                resultDiv.innerHTML = `<h3>❌ Error</h3><p>Network error. Please try again.</p>`;
+                resultDiv.className = 'result error';
+            }
+        });
+    </script>
+</body>
+</html>

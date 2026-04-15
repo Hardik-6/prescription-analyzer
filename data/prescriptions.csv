@@ -1,0 +1,101 @@
+patient_id,age,gender,disease,medicine,dosage_mg,frequency,month
+P001,8,Male,Fever,Paracetamol,250,3,7
+P002,34,Female,Diabetes,Metformin,500,2,1
+P003,65,Male,Hypertension,Amlodipine,5,1,3
+P004,12,Female,Cold & Cough,Cetirizine,10,1,12
+P005,45,Male,Gastric,Omeprazole,20,2,5
+P006,28,Female,Infection,Amoxicillin,500,3,8
+P007,72,Female,Diabetes,Glibenclamide,5,2,2
+P008,19,Male,Allergy,Loratadine,10,1,4
+P009,55,Male,Hypertension,Atenolol,50,1,6
+P010,6,Female,Fever,Paracetamol,125,3,7
+P011,40,Female,Gastric,Pantoprazole,40,1,9
+P012,33,Male,Infection,Azithromycin,500,1,8
+P013,68,Female,Hypertension,Losartan,50,1,11
+P014,15,Male,Cold & Cough,Dextromethorphan,15,3,1
+P015,52,Female,Diabetes,Metformin,1000,2,3
+P016,27,Male,Allergy,Cetirizine,10,1,4
+P017,9,Female,Fever,Ibuprofen,100,3,6
+P018,63,Male,Diabetes,Glipizide,5,2,10
+P019,38,Female,Gastric,Omeprazole,20,2,5
+P020,24,Male,Infection,Doxycycline,100,2,9
+P021,71,Female,Hypertension,Amlodipine,10,1,2
+P022,5,Male,Fever,Paracetamol,125,3,7
+P023,49,Female,Allergy,Montelukast,10,1,4
+P024,36,Male,Cold & Cough,Ambroxol,30,3,12
+P025,58,Female,Diabetes,Insulin,10,2,1
+P026,44,Male,Gastric,Ranitidine,150,2,6
+P027,17,Female,Infection,Amoxicillin,250,3,8
+P028,62,Male,Hypertension,Telmisartan,40,1,3
+P029,31,Female,Fever,Paracetamol,500,3,7
+P030,7,Male,Cold & Cough,Salbutamol,2,3,1
+P031,53,Female,Diabetes,Metformin,500,2,10
+P032,29,Male,Allergy,Fexofenadine,120,1,5
+P033,66,Female,Hypertension,Enalapril,10,2,11
+P034,11,Male,Fever,Paracetamol,250,3,6
+P035,42,Female,Gastric,Esomeprazole,40,1,9
+P036,23,Male,Infection,Ciprofloxacin,500,2,8
+P037,74,Female,Diabetes,Glibenclamide,5,2,2
+P038,16,Male,Cold & Cough,Cetirizine,10,1,12
+P039,47,Female,Allergy,Loratadine,10,1,4
+P040,59,Male,Hypertension,Amlodipine,5,1,3
+P041,35,Female,Gastric,Omeprazole,20,2,7
+P042,26,Male,Infection,Amoxicillin,500,3,9
+P043,69,Female,Diabetes,Metformin,1000,2,1
+P044,13,Male,Fever,Ibuprofen,100,3,6
+P045,50,Female,Hypertension,Losartan,100,1,2
+P046,22,Male,Allergy,Cetirizine,10,1,4
+P047,8,Female,Cold & Cough,Salbutamol,2,3,12
+P048,57,Male,Diabetes,Glipizide,10,2,10
+P049,41,Female,Gastric,Pantoprazole,40,1,5
+P050,32,Male,Infection,Azithromycin,250,1,8
+P051,70,Female,Hypertension,Atenolol,25,1,11
+P052,10,Male,Fever,Paracetamol,250,3,7
+P053,46,Female,Allergy,Montelukast,10,1,3
+P054,37,Male,Gastric,Omeprazole,20,2,6
+P055,61,Female,Diabetes,Insulin,20,2,2
+P056,25,Male,Infection,Doxycycline,200,1,9
+P057,14,Female,Cold & Cough,Ambroxol,15,3,1
+P058,67,Male,Hypertension,Telmisartan,80,1,4
+P059,30,Female,Fever,Paracetamol,500,3,8
+P060,48,Male,Allergy,Fexofenadine,180,1,5
+P061,73,Female,Diabetes,Glibenclamide,10,2,3
+P062,20,Male,Cold & Cough,Dextromethorphan,15,3,12
+P063,56,Female,Hypertension,Enalapril,5,2,6
+P064,9,Male,Fever,Ibuprofen,100,3,7
+P065,43,Female,Gastric,Esomeprazole,20,1,9
+P066,28,Male,Infection,Ciprofloxacin,250,2,8
+P067,64,Female,Diabetes,Metformin,500,2,1
+P068,18,Male,Allergy,Loratadine,10,1,4
+P069,51,Female,Hypertension,Amlodipine,10,1,2
+P070,7,Male,Fever,Paracetamol,125,3,6
+P071,39,Female,Gastric,Ranitidine,150,2,5
+P072,24,Male,Infection,Amoxicillin,500,3,9
+P073,76,Female,Diabetes,Insulin,15,2,10
+P074,15,Male,Cold & Cough,Cetirizine,5,1,12
+P075,60,Female,Hypertension,Losartan,50,1,11
+P076,33,Male,Allergy,Cetirizine,10,1,3
+P077,45,Female,Gastric,Omeprazole,40,2,7
+P078,21,Male,Infection,Azithromycin,500,1,8
+P079,68,Female,Hypertension,Atenolol,50,1,4
+P080,6,Male,Fever,Paracetamol,125,3,7
+P081,54,Female,Diabetes,Glipizide,5,2,2
+P082,27,Male,Allergy,Montelukast,10,1,5
+P083,72,Female,Hypertension,Telmisartan,40,1,6
+P084,12,Male,Cold & Cough,Salbutamol,2,3,1
+P085,49,Female,Gastric,Pantoprazole,40,1,9
+P086,36,Male,Infection,Doxycycline,100,2,8
+P087,65,Female,Diabetes,Metformin,1000,2,3
+P088,23,Male,Fever,Paracetamol,500,3,7
+P089,58,Female,Allergy,Fexofenadine,120,1,4
+P090,44,Male,Hypertension,Enalapril,10,2,11
+P091,8,Female,Fever,Ibuprofen,100,3,6
+P092,31,Male,Gastric,Esomeprazole,40,1,5
+P093,69,Female,Diabetes,Glibenclamide,5,2,1
+P094,17,Male,Cold & Cough,Ambroxol,30,3,12
+P095,55,Female,Hypertension,Amlodipine,5,1,2
+P096,26,Male,Infection,Ciprofloxacin,500,2,9
+P097,74,Female,Diabetes,Insulin,10,2,10
+P098,13,Male,Fever,Paracetamol,250,3,8
+P099,40,Female,Allergy,Loratadine,10,1,4
+P100,62,Male,Hypertension,Losartan,100,1,3
