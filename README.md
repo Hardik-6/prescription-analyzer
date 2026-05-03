@@ -1,6 +1,5 @@
 # Common Disease Analysis Using Prescription Data
-## Capstone Project — Sahil Parte (61) & Hardik Patil (68)
-### BE Computer Engineering, 2025
+### BE Computer Engineering, 2026
 
 ---
 
